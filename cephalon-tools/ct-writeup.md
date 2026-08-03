@@ -7,7 +7,7 @@ This is a website that I made to solve a friction problem for the game Warframe.
 Warframe has a robust community trading system, with players being able to trade
 premium currency and most in-game items with each other. While the in-game interface 
 for this leaves much to be desired, several community tools have sprung up throughout 
-the years to much success. Out of these, https://warframe.market (WFM for short) has 
+the years to much success. Out of these, [Warframe Market](https://warframe.market) (WFM for short) has 
 seen the most use. It lets users create listings to buy and sell every tradable item. 
 This was a big step forward, but it has a few issues, the most glaring being the complete
 lack of wider informational views.
@@ -15,11 +15,10 @@ lack of wider informational views.
 
 Here's an overview of the steps a user can take to answer the questions WFM struggles with:
 
-	**"Out of a large amount of items, which are the most valuable?"**: 
+- "Out of a large amount of items, which are the most valuable?": 
 	- Individually look up every item they have
-	- Write down the prices of each item 
-
-	**"How should I most efficiently spend my time to get a certain item?"**:
+	- Write down the prices of each item 	
+- "How should I most efficiently spend my time to get a certain item?":
 	- Individually search every revenue source they have
 	- Search the desired items
 	- Search how to get the desired items (takes user off-site)
@@ -136,16 +135,43 @@ do not allow any commands or tools that affect remote environments. No git comma
 wrangler, gcloud, etc.
 
 Only after all of this is done do I start the agent CLI. Most of the time, I use it in manual mode.
-While it can be faster in auto, it makes frequent mistakes that could be caught otherwise.
+While it can be faster in auto, it makes frequent mistakes that could be caught otherwise. This 
+project is a bit of an exception, and I frequently ran it in auto as an experiment.
 
 ### Go Backend
 
+Go is my preferred language for this sort of task, so the backend is Go. There are some parts of the
+backend that are JS, but those are not run on the regular update interval. The primary function 
+of the backend is to run a data refresh script every 6 hours. This takes about 5 minutes due to 
+WFM's API rate limiting. The refresh runs in 5 discrete steps:
 
+- Fetch data from the Warframe wiki
+	- Covers new items, relic vault status
+- Fetch WFM data for each tracked item
+	- Have to fetch separately due to WFM API structure
+- Join the two data sources in a SQL database
+- Fetch updated price data from WFM
+- Export the DB as a <500 KB json file to cloudflare/frontend
 
+I deliberately chose to have both the SQL DB and the json file. I wanted to have the DB in case 
+I expand the scope of the website in the future, and I wanted the json file so that the site remains
+fairly disconnected from the backend. The file is small enough where it makes sense to use this 
+configuration, the user only has to send 1 request, and the tables are lightning-fast because all 
+of the filter & search is done on-device.
 
+### Frontend
 
+I serve the user two main files: the json data export and a massive html file with embedded JS. 
+All code in the entire project is dependency-free, so the site is running on pure vanilla JS.
+The site's JS simply handles building, rendering, and maintaining the tables.
 
+### Parting Words
 
+Code available on request, but repo will remain private.
+
+Sample relic list in this directory `sample-relic-list.txt` if you want to play around with the site.
+
+https://cephalontools.com
 
 
 
