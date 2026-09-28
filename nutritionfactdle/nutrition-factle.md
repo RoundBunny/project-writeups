@@ -6,7 +6,7 @@ information. They're given a picture, the brand, the store, and a somewhat-fille
 After three guesses with feedback, the user is directed to a score page where they can share
 their results via text or image. 
 
-https://nutritionfactle.com
+https://nutritionfactdle.com
 
 Nutrition Factdle
 #036 : Sep 28 • 648 points
